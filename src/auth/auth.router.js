@@ -1,5 +1,5 @@
 import express from 'express'
-import { loginJWTController, registerUserController } from './auth.controller.js'
+import { loginJWTController, registerUserController, validateUserController } from './auth.controller.js'
 
 const router = express.Router()
 
@@ -12,7 +12,7 @@ router.route('/register')
     .post(registerUserController)
 
 router.route('/validate')
-    .get
+    .get(validateUserController)
 
 
 export default router

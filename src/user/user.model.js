@@ -21,21 +21,42 @@ const client = new MongoClient(URI)
 // }
 
 
-export async function registerUser(name, email, password){
+export async function registerUser(name, email, password) {
 
-    let user = {userName: name, userEmail:email, userPassword:password, isValid:false, userFishbowls:[]}
-    try{
+    let user = { userName: name, userEmail: email, userPassword: password, isValid: false, userFishbowls: [] }
+    try {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
         const newUser = await users.insertOne(user)
         return newUser
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
-    finally{
-      await client.close()
+    finally {
+        await client.close()
     }
 
+}
+
+export async function updateUserMailVerification (email) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const newUser = await users.find({userEmail:email})
+        if(newUser!==null){
+            await users.updateOne({userEmail:email},{$set:{isValid:true}},{ upsert: true } )
+        }
+        else{
+            console.log('email does not match')
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
 }
