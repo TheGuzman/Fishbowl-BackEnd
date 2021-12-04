@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { registerUser, getUserInfoByEmailAndPassword, updateUserMailVerification } from '../user/user.model.js';
 import { secret } from './auth.secret.js'
-import { getUserInfoByEmail } from './auth.model.js';
+import { getUserInfoByEmail } from '../user/user.model.js';
 import { registerToken, validateToken } from "./auth.model.js";
 import { encodePassword, generateRandomEmailToken } from './auth.utils.js';
 import { sendMail } from '../adapters/mail.js'; 

@@ -8,7 +8,7 @@ export const validateJWTAuth = (req,res,next)=>{
 
     try{
         const jwtDecoded = jwt.verify(jwtToken,secret);
-        req.email = jwtDecoded.user
+        req.email = jwtDecoded.user.Email
         next()
     }
     catch(err){

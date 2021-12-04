@@ -20,6 +20,22 @@ export async function getUserInfoByEmailAndPassword(email, password){
     }
 }
 
+export async function getUserInfoByEmail(email) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const exists = await users.findOne({ userEmail: email })
+        return exists
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
 export async function getUserInfoById (userId) {
     try {
         await client.connect()
