@@ -1,33 +1,32 @@
 import jwt from 'jsonwebtoken';
-import { registerUser, updateUserMailVerification } from '../user/user.model.js';
+import { registerUser, getUserInfoByEmailAndPassword, updateUserMailVerification } from '../user/user.model.js';
 import { secret } from './auth.secret.js'
 import { getUserInfoByEmail } from './auth.model.js';
 import { registerToken, validateToken } from "./auth.model.js";
 import { encodePassword, generateRandomEmailToken } from './auth.utils.js';
 import { sendMail } from '../adapters/mail.js'; 
 
-export const loginJWTController  = (req,res)=>{
+export const loginJWTController  = async (req,res)=>{
 
-    // const {email, password} = req.body;
+    const {userEmail, userPassword} = req.body;
 
-    // const passEnconded = encodePassword(password)
-    // const userInfo = await getUserInfoByEmailAndPassword(email, passEnconded)
+    const passEnconded = encodePassword(userPassword)
+    const userInfo = await getUserInfoByEmailAndPassword(userEmail, passEnconded)
 
-    // if(userInfo!==null){
-    //     const token = jwt.sign ({ user:email }, secret);
-    //     res.send({
-    //         access_token: token
-    //     });
-    // } 
-    // else{
-    //     res.status (404).send('Wrong UserName or Password')
-    // }
+    if(userInfo!==null){
+        const token = jwt.sign ({ user:userEmail }, secret);
+        res.send({
+            access_token: token
+        });
+    } 
+    else{
+        res.status (404).send('Wrong UserName or Password')
+    }
 }
 
 export const registerUserController = async (req, res)=>{
 
     const{ userName, userEmail, userPassword } = req.body;
-
 
     const userInfo =  await getUserInfoByEmail(userEmail)
     if(userInfo===null){
