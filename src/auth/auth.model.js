@@ -1,42 +1,60 @@
 import { MongoClient } from 'mongodb'
-import URI from './URI.js'
+import URI from '../user/URI.js'
 
-const URIlink = URI
+const client = new MongoClient(URI)
 
-const client = new MongoClient(URIlink)
 
-export async function getUserEmail(email){
-    try{
+
+export async function registerToken(token, email) {
+
+    let newRegisteredUser = { userToken: token, userEmail: email }
+    try {
         await client.connect()
         const database = client.db('Fishbowl')
-        const users = database.collection('Users')
-        const exists = await users.findOne({userEmail:email})
-        console.log(exists)
-        // return exists
+        const users = database.collection('Registrations')
+        const newRegistration = await users.insertOne(newRegisteredUser)
+        return newRegistration
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
-    finally{
+    finally {
         await client.close()
     }
 }
 
+export async function retrieveEmailByToken (token) {
 
-export async function registerUser(user){
-
-    try{
+    try {
         await client.connect()
-        const database = client.db('Social-Network')
-        const users = database.collection('users')
-        const newUser = await users.insertOne(user)
-        return newUser.insertedId
+        const database = client.db('Fishbowl')
+        const users = database.collection('Registrations')
+        const email = await users.findOne({token})
+        return email
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
-    finally{
-      await client.close()
+    finally {
+        await client.close()
+    }
+
+}
+
+export async function validateToken (token) {
+
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const registeredEmails = database.collection('Registrations')
+        const user = await registeredEmails.findOne({userToken:token})
+        return user.userEmail
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
     }
 
 }
