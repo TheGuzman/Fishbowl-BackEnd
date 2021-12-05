@@ -8,11 +8,13 @@ export const validateJWTAuth = (req,res,next)=>{
 
     try{
         const jwtDecoded = jwt.verify(jwtToken,secret);
-        req.email = jwtDecoded.user.Email
+        req.email = jwtDecoded.user
+        console.log('valid log in from validateJWTAuth middleware')
         next()
     }
     catch(err){
         console.log(err)
         res.status(401).send('User has not a valid token')
+        console.log('Invalid log in from validateJWTAuth middleware')
     }
 }

@@ -7,7 +7,7 @@ import { validateJWTAuth } from '../auth/auth.middleware.js'
 const router = express.Router();
 
 router.use(validateJWTAuth)
-router.route('/')
+router.route('/becomeafish')
     .get(retrieveUserInfoCtrl)
 
 
