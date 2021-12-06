@@ -1,5 +1,8 @@
 import { getUserInfoByEmail } from './user.model.js';
 import { registerFishbowl } from './user.model.js'
+import jwt from 'jsonwebtoken';
+import { secret } from '../auth/auth.secret.js'
+
 
 export const retrieveUserInfoCtrl = async (req, res) => {
 
@@ -11,7 +14,14 @@ export const retrieveUserInfoCtrl = async (req, res) => {
 
 export const registerFihsbowlCtrl = async (req, res) => {
 
-    const { fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator } = req.body;
+    let { fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator } = req.body;
+    let jwtToken = JSON.parse(fishbowlCreator); //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
+    const jwtDecoded = await jwt.verify(jwtToken,secret);
+    let email = jwtDecoded.user;
+    let creator  = await getUserInfoByEmail(email)
+    fishbowlCreator = creator.userName
+    
+
     if (await registerFishbowl(fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate,  fishbowlCreator )) {
         res.status(201).send('fishbowl registered');
     } else {
