@@ -15,12 +15,14 @@ export const loginJWTController  = async (req,res)=>{
 
     if(userInfo!==null){
         const token = jwt.sign ({ user:userEmail }, secret);
+        console.log('valid log in from loginJWTController')
         res.send({
             access_token: token
         });
     } 
     else{
         res.status (404).send('Wrong UserName or Password')
+        console.log('invalid log in from loginJWTController')
     }
 }
 
