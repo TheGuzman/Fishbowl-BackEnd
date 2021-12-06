@@ -92,3 +92,22 @@ export async function updateUserMailVerification (email) {
         await client.close()
     }
 }
+export async function registerFishbowl(name, theme, description, date, creator) {
+
+    let fishbowl = { fishbowlName: name, fishbowlTheme: theme, fishbowlDescription: description, fishbowlTime: date,  fishbowlCreator: creator }
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const newFishbowl = await fishbowls.insertOne(fishbowl)
+        console.log(newFishbowl)
+        return newFishbowl
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}

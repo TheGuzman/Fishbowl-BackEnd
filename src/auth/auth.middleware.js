@@ -3,12 +3,15 @@ import { secret } from './auth.secret.js'
 
 export const validateJWTAuth = (req,res,next)=>{
 
-    const headerAuth = req.get('Autorization')
-    const jwtToken = headerAuth?.split(' ')[1];
+    const headerAuth = req.get('Authorization')
+    // const jwtToken = headerAuth?.split(' ')[1];
+    const jwtToken = headerAuth
+    console.log(headerAuth)
 
     try{
         const jwtDecoded = jwt.verify(jwtToken,secret);
-        req.email = jwtDecoded.user
+        console.log(jwtDecoded)
+        req.email = jwtDecoded.userEmail
         console.log('valid log in from validateJWTAuth middleware')
         next()
     }
