@@ -5,7 +5,7 @@ export const validateJWTAuth = (req,res,next)=>{
 
     const headerAuth = req.get('Authorization')
     const jwtToken = headerAuth?.split(' ')[1];
-
+    console.log(jwtToken)
 
     try{
         const jwtDecoded = jwt.verify(jwtToken,secret);
