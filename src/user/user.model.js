@@ -92,6 +92,7 @@ export async function updateUserMailVerification (email) {
         await client.close()
     }
 }
+
 export async function registerFishbowl(name, theme, description, date, creator) {
 
     let fishbowl = { fishbowlName: name, fishbowlTheme: theme, fishbowlDescription: description, fishbowlTime: date,  fishbowlCreator: creator }
@@ -101,7 +102,30 @@ export async function registerFishbowl(name, theme, description, date, creator) 
         const fishbowls = database.collection('Fishbowls')
         const newFishbowl = await fishbowls.insertOne(fishbowl)
         console.log(newFishbowl)
-        return newFishbowl
+
+        const users= database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo pushea a su array de fishbowls personales
+        const addNewFishbowltoUser = await users.updateOne( {userName:creator} , {$push: { userFishbowls: fishbowl }} ,{ upsert:true} )
+        console.log(addNewFishbowltoUser)
+        return newFishbowl, addNewFishbowltoUser
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
+
+export async function retrieveUserFishbowls(userEmail) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const arrFishbowl = await users.findOne({userEmail:userEmail})
+        console.log('fromretrieve userFishbowls')
+        return arrFishbowl
     }
     catch (err) {
         console.log(err)
