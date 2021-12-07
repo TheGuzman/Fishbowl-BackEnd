@@ -1,5 +1,5 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById } from './user.model.js'
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
 
@@ -59,6 +59,25 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
         const fishbowls = await retrieveAllFishbowls()
         console.log(fishbowls)
         res.status(201).send(fishbowls)
+    }
+    catch(err){
+        res.status(409).send('There was an error');
+    }
+
+    
+}
+
+
+export const deleteaFishbowlByIdCtrl = async (req, res) => {
+
+    let id = req.params.id
+    id = id.substring(1)
+
+
+    try {
+        const fishbowlToDelete = await deleteFishbowlById(id)
+        console.log(fishbowlToDelete)
+        res.status(200).send(fishbowlToDelete)
     }
     catch(err){
         res.status(409).send('There was an error');

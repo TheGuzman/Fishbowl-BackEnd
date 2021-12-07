@@ -2,7 +2,7 @@
 import express from 'express'
 import { retrieveUserInfoCtrl } from './user.controller.js'
 import { registerFihsbowlCtrl } from './user.controller.js'
-import { retrieveUserFishbowlsCtrl, retrieveAllFishbowlsCtrl } from './user.controller.js'
+import { retrieveUserFishbowlsCtrl, retrieveAllFishbowlsCtrl, deleteaFishbowlByIdCtrl } from './user.controller.js'
 import { validateJWTAuth } from '../auth/auth.middleware.js'
 
 
@@ -22,6 +22,7 @@ router.route('/becomeafish/myfishbowls/getuserfishbowls')
 router.route('/becomeafish/myfishbowls/createfishbowl')
     .post(registerFihsbowlCtrl)
 
-
+router.route('/becomeafish/deleteafishbowl/:id')
+    .delete(deleteaFishbowlByIdCtrl)
 
 export default router;

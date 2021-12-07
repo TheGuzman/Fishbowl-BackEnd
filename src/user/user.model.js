@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb'
 import URI from './URI.js'
+import { ObjectId } from 'mongodb'
 
 const client = new MongoClient(URI)
 
@@ -153,3 +154,26 @@ export async function retrieveAllFishbowls() {
     }
 
 }
+
+
+export async function deleteFishbowlById(fishbowlId) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const deletedFishbowl = await fishbowls.findOneAndDelete({_id:ObjectId(fishbowlId)})
+
+        const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo borra de su array de fishbowls personales
+        const deleteFishbowlFromUser = await users.updateOne( {userName:deletedFishbowl.fishbowlCreator} , {$pull: { _id: fishbowlId }} ,{ upsert:true} )
+        console.log(deleteFishbowlFromUser)
+        return deletedFishbowl, deleteFishbowlFromUser
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
