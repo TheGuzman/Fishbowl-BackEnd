@@ -1,1 +1,0 @@
-export const secret = 'fishbowl_secret';
