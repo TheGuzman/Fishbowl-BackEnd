@@ -24,3 +24,5 @@ yarn-error.log*
 
 URI.js
 auth.secret.js
+pusher.config.js
+index.html

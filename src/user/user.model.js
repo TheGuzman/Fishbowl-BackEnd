@@ -135,3 +135,21 @@ export async function retrieveUserFishbowls(userEmail) {
     }
 
 }
+
+
+export async function retrieveAllFishbowls() {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const allFishbowls = await fishbowls.find().toArray()
+        return allFishbowls
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}

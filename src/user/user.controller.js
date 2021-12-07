@@ -1,5 +1,5 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls } from './user.model.js'
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
 
@@ -36,7 +36,7 @@ export const registerFihsbowlCtrl = async (req, res) => {
 
 }
 
-export const retrieveFishbowlsCtrl = async (req, res) => {
+export const retrieveUserFishbowlsCtrl = async (req, res) => {
 
     try {
         const headerAuth = req.get('Authorization')
@@ -45,6 +45,20 @@ export const retrieveFishbowlsCtrl = async (req, res) => {
         let email = jwtDecoded.user;
         const fishbowls = await retrieveUserFishbowls(email)
         res.status(201).send(fishbowls.userFishbowls)
+    }
+    catch(err){
+        res.status(409).send('There was an error');
+    }
+
+    
+}
+
+export const retrieveAllFishbowlsCtrl = async (req, res) => {
+
+    try {
+        const fishbowls = await retrieveAllFishbowls()
+        console.log(fishbowls)
+        res.status(201).send(fishbowls)
     }
     catch(err){
         res.status(409).send('There was an error');
