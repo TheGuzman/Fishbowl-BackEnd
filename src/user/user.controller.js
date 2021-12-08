@@ -17,14 +17,14 @@ export const retrieveUserInfoCtrl = async (req, res) => {
 
 export const registerFihsbowlCtrl = async (req, res) => {
 
-    let { fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator } = req.body;
-    let jwtToken = fishbowlCreator.split(' ')[1]; //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
-    console.log('from registerFishbowlCTRL')
-    console.log(jwtToken)
+    let { fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate} = req.body;
+
+    const headerAuth = req.get('Authorization')  //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
+    const jwtToken = headerAuth?.split(' ')[1];
     const jwtDecoded = await jwt.verify(jwtToken, secret);
     let email = jwtDecoded.user;
     let creator = await getUserInfoByEmail(email)
-    fishbowlCreator = creator.userName
+    let fishbowlCreator = creator.userName
 
     if (await registerFishbowl(fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator)) {
         res.status(201).send('fishbowl registered');
