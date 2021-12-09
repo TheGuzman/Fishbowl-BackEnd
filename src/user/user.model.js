@@ -102,10 +102,9 @@ export async function registerFishbowl(name, theme, description, date, creator) 
         const database = client.db('Fishbowl')
         const fishbowls = database.collection('Fishbowls')
         const newFishbowl = await fishbowls.insertOne(fishbowl)
-        console.log(newFishbowl)
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo pushea a su array de fishbowls personales
-        const addNewFishbowltoUser = await users.updateOne({ userName: creator }, { $push: { userFishbowls: fishbowl } }, { upsert: true })
+        const addNewFishbowltoUser = await users.updateOne({ userName: creator }, { $push: { userFishbowls: newFishbowl.insertedId } }, { upsert: true })
         console.log(addNewFishbowltoUser)
         return newFishbowl, addNewFishbowltoUser
     }
@@ -125,7 +124,23 @@ export async function retrieveUserFishbowls(userEmail) {
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
         const arrFishbowl = await users.findOne({ userEmail: userEmail })
-        console.log('fromretrieve userFishbowls')
+        return arrFishbowl
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
+export async function retrieveUserFishbowlsById(arrId) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const arrFishbowl = await fishbowls.find({ _id: { $in: arrId.map(e => ObjectId(e)) } }).toArray()
         return arrFishbowl
     }
     catch (err) {
@@ -165,7 +180,7 @@ export async function deleteFishbowlById(fishbowlId) {
         const deletedFishbowl = await fishbowls.findOneAndDelete({ _id: ObjectId(fishbowlId) })
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo borra de su array de fishbowls personales
-        const deleteFishbowlFromUser = await users.updateOne({ userName: fishbowlInfo.fishbowlCreator }, { $pull: { userFishbowls: { _id: ObjectId(fishbowlId) } } })
+        const deleteFishbowlFromUser = await users.updateOne({ userName: fishbowlInfo.fishbowlCreator }, { $pull: { userFishbowls: ObjectId(fishbowlId) } })
 
         console.log(deleteFishbowlFromUser)
         return deletedFishbowl, deleteFishbowlFromUser

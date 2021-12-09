@@ -58,3 +58,7 @@ export async function validateToken (token) {
     }
 
 }
+
+export async function deleteToken (token){
+    
+}
