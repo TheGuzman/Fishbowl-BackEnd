@@ -58,7 +58,6 @@ export async function getUserInfoById(userId) {
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
         const user = await users.find({ userEmail: userId })
-        console.log(user)
         return user
     }
     catch (err) {
@@ -120,7 +119,6 @@ export async function registerFishbowl(name, theme, description, date, creator) 
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo pushea a su array de fishbowls personales
         const addNewFishbowltoUser = await users.updateOne({ name: creator }, { $push: { fishbowls: newFishbowl.insertedId } }, { upsert: true })
-        console.log(addNewFishbowltoUser)
         return newFishbowl, addNewFishbowltoUser
     }
     catch (err) {
@@ -139,8 +137,6 @@ export async function retrieveUserFishbowls(email) {
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
         const arrFishbowl = await users.findOne({ email: email })
-        console.log('from retrieveuserFishbowls')
-        console.log(arrFishbowl)
         return arrFishbowl.fishbowls
     }
     catch (err) {
@@ -198,8 +194,6 @@ export async function deleteFishbowlById(fishbowlId) {
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo borra de su array de fishbowls personales
         const deleteFishbowlFromUser = await users.updateOne({ name: fishbowlInfo.creator }, { $pull: { fishbowls: ObjectId(fishbowlId) } })
-
-        console.log(deleteFishbowlFromUser)
         return deletedFishbowl, deleteFishbowlFromUser
     }
     catch (err) {

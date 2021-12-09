@@ -9,7 +9,6 @@ export const retrieveUserInfoCtrl = async (req, res) => {
     const userInfo = await getUserInfoByEmail(req.userEmail);
     console.log(req.userEmail)
     delete userInfo.userPassword;
-    console.log(userInfo)
     console.log('from retrieve user controller' + userInfo)
 
     res.send(userInfo)
@@ -59,8 +58,6 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
 
     try {
         const fishbowls = await retrieveAllFishbowls()
-        console.log(fishbowls)
-        console.log('from retrieve all fisbowls')
         res.status(201).send(fishbowls)
     }
     catch(err){
