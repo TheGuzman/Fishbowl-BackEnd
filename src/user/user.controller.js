@@ -1,5 +1,5 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls,retrieveUserFishbowlsById, deleteFishbowlById } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById } from './user.model.js'
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
 
@@ -24,14 +24,14 @@ export const registerFihsbowlCtrl = async (req, res) => {
     const jwtDecoded = await jwt.verify(jwtToken, secret);
     let email = jwtDecoded.user;
     let creator = await getUserInfoByEmail(email)
-    let fishbowlCreator = creator.userName
+    let fishbowlCreator = creator.name
 
     if (await registerFishbowl(fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator)) {
-        res.status(201).send(JSON.stringify('fishbowl registered'));
+        res.status(201).send('fishbowl registered');
     } else {
         // si el usuario ya existe mando al cliente un 409 (conflict), indicando que el usuario 
         // ya existe
-        res.status(409).send(JSON.stringify('There was an error'));
+        res.status(409).send('There was an error');
     }
 
 }
@@ -45,12 +45,8 @@ export const retrieveUserFishbowlsCtrl = async (req, res) => {
         let email = jwtDecoded.user;
         
         const fishbowls = await retrieveUserFishbowls(email)
-        console.log('from retrieve');
-        console.log(fishbowls.userFishbowls)
-
-        const userFishbowlsfromDDBB = await retrieveUserFishbowlsById(fishbowls.userFishbowls)
-        console.log(userFishbowlsfromDDBB)
-        res.status(201).send(userFishbowlsfromDDBB)
+        const userFishbowls = await retrieveUserFishbowlsById(fishbowls)
+        res.status(201).send(userFishbowls)
     }
     catch(err){
         res.status(409).send('There was an error');
@@ -64,6 +60,7 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
     try {
         const fishbowls = await retrieveAllFishbowls()
         console.log(fishbowls)
+        console.log('from retrieve all fisbowls')
         res.status(201).send(fishbowls)
     }
     catch(err){

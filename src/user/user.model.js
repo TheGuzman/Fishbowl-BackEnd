@@ -9,8 +9,23 @@ export async function getUserInfoByEmailAndPassword(email, password) {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const exists = await users.findOne({ userEmail: email, userPassword: password })
-        console.log(exists)
+        const exists = await users.findOne({ email: email, password: password })
+        return exists
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
+export async function getUserInfoByEmailAndUserName(userEmail, userName) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const exists = await users.findOne({$or:[{ email: userEmail}, {name:userName }]})
         return exists
     }
     catch (err) {
@@ -26,7 +41,7 @@ export async function getUserInfoByEmail(email) {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const exists = await users.findOne({ userEmail: email })
+        const exists = await users.findOne({ email: email })
         return exists
     }
     catch (err) {
@@ -56,11 +71,11 @@ export async function getUserInfoById(userId) {
 
 export async function registerUser(name, email, password) {
 
-    let user = { userName: name, userEmail: email, userPassword: password, isValid: false, userFishbowls: [] }
+    let user = { name: name, email: email, password: password, isValid: false, fishbowls: [] }
     try {
         await client.connect()
         const database = client.db('Fishbowl')
-        const users = database.collection('Users')
+        const users = database.collection('Users')        
         const newUser = await users.insertOne(user)
         return newUser
     }
@@ -80,7 +95,7 @@ export async function updateUserMailVerification(email) {
         const users = database.collection('Users')
         const newUser = await users.find({ userEmail: email })
         if (newUser !== null) {
-            await users.updateOne({ userEmail: email }, { $set: { isValid: true } }, { upsert: true })
+            await users.updateOne({ email: email }, { $set: { isValid: true } }, { upsert: true })
         }
         else {
             console.log('email does not match')
@@ -96,7 +111,7 @@ export async function updateUserMailVerification(email) {
 
 export async function registerFishbowl(name, theme, description, date, creator) {
 
-    let fishbowl = { fishbowlName: name, fishbowlTheme: theme, fishbowlDescription: description, fishbowlTime: date, fishbowlCreator: creator }
+    let fishbowl = { name: name, theme: theme, description: description, time: date, creator: creator, state:'created' }
     try {
         await client.connect()
         const database = client.db('Fishbowl')
@@ -104,7 +119,7 @@ export async function registerFishbowl(name, theme, description, date, creator) 
         const newFishbowl = await fishbowls.insertOne(fishbowl)
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo pushea a su array de fishbowls personales
-        const addNewFishbowltoUser = await users.updateOne({ userName: creator }, { $push: { userFishbowls: newFishbowl.insertedId } }, { upsert: true })
+        const addNewFishbowltoUser = await users.updateOne({ name: creator }, { $push: { fishbowls: newFishbowl.insertedId } }, { upsert: true })
         console.log(addNewFishbowltoUser)
         return newFishbowl, addNewFishbowltoUser
     }
@@ -118,13 +133,15 @@ export async function registerFishbowl(name, theme, description, date, creator) 
 }
 
 
-export async function retrieveUserFishbowls(userEmail) {
+export async function retrieveUserFishbowls(email) {
     try {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const arrFishbowl = await users.findOne({ userEmail: userEmail })
-        return arrFishbowl
+        const arrFishbowl = await users.findOne({ email: email })
+        console.log('from retrieveuserFishbowls')
+        console.log(arrFishbowl)
+        return arrFishbowl.fishbowls
     }
     catch (err) {
         console.log(err)
@@ -180,7 +197,7 @@ export async function deleteFishbowlById(fishbowlId) {
         const deletedFishbowl = await fishbowls.findOneAndDelete({ _id: ObjectId(fishbowlId) })
 
         const users = database.collection('Users')   //Encuentra el usuario que ha creado el fishbowl y lo borra de su array de fishbowls personales
-        const deleteFishbowlFromUser = await users.updateOne({ userName: fishbowlInfo.fishbowlCreator }, { $pull: { userFishbowls: ObjectId(fishbowlId) } })
+        const deleteFishbowlFromUser = await users.updateOne({ name: fishbowlInfo.creator }, { $pull: { fishbowls: ObjectId(fishbowlId) } })
 
         console.log(deleteFishbowlFromUser)
         return deletedFishbowl, deleteFishbowlFromUser

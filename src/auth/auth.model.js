@@ -59,6 +59,19 @@ export async function validateToken (token) {
 
 }
 
-export async function deleteToken (token){
-    
+export async function deleteToken (email){
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const registeredEmails = database.collection('Registrations')
+        const user = await registeredEmails.findOneAndDelete({userEmail:email})
+        return user
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
 }
