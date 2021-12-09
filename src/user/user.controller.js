@@ -1,5 +1,5 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls,retrieveUserFishbowlsById, deleteFishbowlById } from './user.model.js'
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
 
@@ -27,11 +27,11 @@ export const registerFihsbowlCtrl = async (req, res) => {
     let fishbowlCreator = creator.userName
 
     if (await registerFishbowl(fishbowlName, fishbowlTheme, fishbowlDescription, fishbowlDate, fishbowlCreator)) {
-        res.status(201).send('fishbowl registered');
+        res.status(201).send(JSON.stringify('fishbowl registered'));
     } else {
         // si el usuario ya existe mando al cliente un 409 (conflict), indicando que el usuario 
         // ya existe
-        res.status(409).send('There was an error');
+        res.status(409).send(JSON.stringify('There was an error'));
     }
 
 }
@@ -43,8 +43,14 @@ export const retrieveUserFishbowlsCtrl = async (req, res) => {
         const jwtToken = headerAuth?.split(' ')[1];
         const jwtDecoded = await jwt.verify(jwtToken, secret);
         let email = jwtDecoded.user;
+        
         const fishbowls = await retrieveUserFishbowls(email)
-        res.status(201).send(fishbowls.userFishbowls)
+        console.log('from retrieve');
+        console.log(fishbowls.userFishbowls)
+
+        const userFishbowlsfromDDBB = await retrieveUserFishbowlsById(fishbowls.userFishbowls)
+        console.log(userFishbowlsfromDDBB)
+        res.status(201).send(userFishbowlsfromDDBB)
     }
     catch(err){
         res.status(409).send('There was an error');
