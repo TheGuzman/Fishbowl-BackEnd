@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb'
 import URI from './URI.js'
 import { ObjectId } from 'mongodb'
+import {v4 as uuidv4} from 'uuid'
 
 const client = new MongoClient(URI)
 
@@ -110,7 +111,7 @@ export async function updateUserMailVerification(email) {
 
 export async function registerFishbowl(name, theme, description, date, creator) {
 
-    let fishbowl = { name: name, theme: theme, description: description, time: date, creator: creator, state:'created' }
+    let fishbowl = { name: name, theme: theme, description: description, time: date, creator: creator, state:'created', roomId:uuidv4() }
     try {
         await client.connect()
         const database = client.db('Fishbowl')
@@ -205,3 +206,54 @@ export async function deleteFishbowlById(fishbowlId) {
 
 }
 
+export async function deleteUserAccountByEmail(email){
+    try{
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const deleteUserAccount = await users.findOneAndDelete({email:email})
+        return deleteUserAccount
+      
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
+export async function updateUserNameByEmail(email, newUserName){
+    try{
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const updateUserName = await users.updateOne({ email: email },{$set: {name:newUserName}}, { upsert: true })
+        return updateUserName
+      
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+export async function updateUserFishbowlCreator(email, newUserName){
+    try{
+        const user = await getUserInfoByEmail(email);
+        console.log(user)
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const updateFishbowlCreatorName = await fishbowls.updateMany({creator:user.name}, {$set:{creator:newUserName}})
+        return updateFishbowlCreatorName
+      
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}

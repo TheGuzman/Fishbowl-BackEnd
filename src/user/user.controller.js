@@ -1,7 +1,18 @@
 import { getUserInfoByEmail } from './user.model.js';
 import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById } from './user.model.js'
+import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator } from './user.model.js'
+
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
+
+
+async function getUserEmailByToken(req){
+    const headerAuth = req.get('Authorization')  //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
+    const jwtToken = headerAuth?.split(' ')[1];
+    const jwtDecoded = await jwt.verify(jwtToken, secret);
+    let email = jwtDecoded.user;
+    return email
+}
 
 
 export const retrieveUserInfoCtrl = async (req, res) => {
@@ -13,6 +24,34 @@ export const retrieveUserInfoCtrl = async (req, res) => {
 
     res.send(userInfo)
 }
+
+export const deleteUserAccountCtrl = async (req, res) => {
+
+    const email = await getUserEmailByToken(req)
+    if(await deleteUserAccountByEmail(email)){
+        res.status(200).send({message:'account successfully deleted', status:200})
+    }
+    else{
+        res.status(404).send({message:'There was an error', status:404});
+    }
+    
+}
+
+export const updateUserNameCtrl = async (req, res) => {
+
+    const email = await getUserEmailByToken(req)
+    const newUserName = req.body.userName
+    console.log(newUserName)
+    if(await updateUserFishbowlCreator(email, newUserName)&&(await updateUserNameByEmail(email, newUserName))){
+        res.status(200).send({message:'user name successfully updated', status:200})
+    }
+    else{
+        res.status(404).send({message:'There was an error', status:404});
+    }
+    
+}
+
+
 
 export const registerFihsbowlCtrl = async (req, res) => {
 
