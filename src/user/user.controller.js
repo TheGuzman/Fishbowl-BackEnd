@@ -47,7 +47,7 @@ export const updateUserNameCtrl = async (req, res) => {
         res.status(200).send({message:'user name successfully updated', status:200})
     }
     else{
-        res.status(404).send({message:'There was an error', status:404});
+        res.status(409).send('There was an error');
     }
     
 }

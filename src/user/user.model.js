@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb'
 import URI from './URI.js'
 import { ObjectId } from 'mongodb'
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 const client = new MongoClient(URI)
 
@@ -26,7 +26,7 @@ export async function getUserInfoByEmailAndUserName(userEmail, userName) {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const exists = await users.findOne({$or:[{ email: userEmail}, {name:userName }]})
+        const exists = await users.findOne({ $or: [{ email: userEmail }, { name: userName }] })
         return exists
     }
     catch (err) {
@@ -75,7 +75,7 @@ export async function registerUser(name, email, password) {
     try {
         await client.connect()
         const database = client.db('Fishbowl')
-        const users = database.collection('Users')        
+        const users = database.collection('Users')
         const newUser = await users.insertOne(user)
         return newUser
     }
@@ -111,7 +111,7 @@ export async function updateUserMailVerification(email) {
 
 export async function registerFishbowl(name, theme, description, date, creator) {
 
-    let fishbowl = { name: name, theme: theme, description: description, time: date, creator: creator, state:'created', roomId:uuidv4() }
+    let fishbowl = { name: name, theme: theme, description: description, time: date, creator: creator, state: 'created', roomId: uuidv4() }
     try {
         await client.connect()
         const database = client.db('Fishbowl')
@@ -206,14 +206,14 @@ export async function deleteFishbowlById(fishbowlId) {
 
 }
 
-export async function deleteUserAccountByEmail(email){
-    try{
+export async function deleteUserAccountByEmail(email) {
+    try {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const deleteUserAccount = await users.findOneAndDelete({email:email})
+        const deleteUserAccount = await users.findOneAndDelete({ email: email })
         return deleteUserAccount
-      
+
     }
     catch (err) {
         console.log(err)
@@ -223,14 +223,21 @@ export async function deleteUserAccountByEmail(email){
     }
 }
 
-export async function updateUserNameByEmail(email, newUserName){
-    try{
+export async function updateUserNameByEmail(email, newUserName) {
+    try {
         await client.connect()
         const database = client.db('Fishbowl')
         const users = database.collection('Users')
-        const updateUserName = await users.updateOne({ email: email },{$set: {name:newUserName}}, { upsert: true })
-        return updateUserName
-      
+        const newUserExists = await users.findOne({ name: newUserName })
+        if (newUserExists === null) {
+            const updateUserName = await users.updateOne({ email: email }, { $set: { name: newUserName } }, { upsert: true })
+            return updateUserName
+        }
+        else {
+            return false
+        }
+
+
     }
     catch (err) {
         console.log(err)
@@ -239,14 +246,14 @@ export async function updateUserNameByEmail(email, newUserName){
         await client.close()
     }
 }
-export async function updateUserFishbowlCreator(oldUsername, NewUsername){
-    try{
+export async function updateUserFishbowlCreator(oldUsername, NewUsername) {
+    try {
         await client.connect()
         const database = client.db('Fishbowl')
         const fishbowls = database.collection('Fishbowls')
-        const updateFishbowlCreatorName = await fishbowls.updateMany({creator:oldUsername}, {$set:{creator:NewUsername}})
+        const updateFishbowlCreatorName = await fishbowls.updateMany({ creator: oldUsername }, { $set: { creator: NewUsername } })
         return updateFishbowlCreatorName
-      
+
     }
     catch (err) {
         console.log(err)
