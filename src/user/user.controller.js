@@ -40,9 +40,10 @@ export const deleteUserAccountCtrl = async (req, res) => {
 export const updateUserNameCtrl = async (req, res) => {
 
     const email = await getUserEmailByToken(req)
+    const oldUser = await getUserInfoByEmail(email);
     const newUserName = req.body.userName
     console.log(newUserName)
-    if(await updateUserFishbowlCreator(email, newUserName)&&(await updateUserNameByEmail(email, newUserName))){
+    if(await updateUserNameByEmail(email, newUserName)&&await updateUserFishbowlCreator(oldUser.name, newUserName)){
         res.status(200).send({message:'user name successfully updated', status:200})
     }
     else{

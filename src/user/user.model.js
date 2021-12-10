@@ -239,14 +239,12 @@ export async function updateUserNameByEmail(email, newUserName){
         await client.close()
     }
 }
-export async function updateUserFishbowlCreator(email, newUserName){
+export async function updateUserFishbowlCreator(oldUsername, NewUsername){
     try{
-        const user = await getUserInfoByEmail(email);
-        console.log(user)
         await client.connect()
         const database = client.db('Fishbowl')
         const fishbowls = database.collection('Fishbowls')
-        const updateFishbowlCreatorName = await fishbowls.updateMany({creator:user.name}, {$set:{creator:newUserName}})
+        const updateFishbowlCreatorName = await fishbowls.updateMany({creator:oldUsername}, {$set:{creator:NewUsername}})
         return updateFishbowlCreatorName
       
     }
