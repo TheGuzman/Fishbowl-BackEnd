@@ -1,6 +1,7 @@
 import { getUserInfoByEmail } from './user.model.js';
 import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById } from './user.model.js'
-import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator } from './user.model.js'
+import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator,updateUserPasswordsByEmail } from './user.model.js'
+import { encodePassword } from '../auth/auth.utils.js';
 
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
@@ -50,6 +51,23 @@ export const updateUserNameCtrl = async (req, res) => {
     }
     
 }
+
+export const updateUserPasswordCtrl = async (req, res) => {
+
+    const email = await getUserEmailByToken(req)
+    const newUserPassword = req.body.userPassword;
+    const newUserPasswordEncoded = await encodePassword(newUserPassword)
+
+    console.log(email, req.body.userPassword, newUserPasswordEncoded)
+
+    if(await updateUserPasswordsByEmail(email, newUserPasswordEncoded)){
+        res.status(200).send({message:'user password successfully updated', status:200})
+    }
+    else{
+        res.status(409).send('There was an error');
+    }
+}
+    
 
 
 

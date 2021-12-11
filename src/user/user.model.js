@@ -53,21 +53,21 @@ export async function getUserInfoByEmail(email) {
     }
 }
 
-export async function getUserInfoById(userId) {
-    try {
-        await client.connect()
-        const database = client.db('Fishbowl')
-        const users = database.collection('Users')
-        const user = await users.find({ userEmail: userId })
-        return user
-    }
-    catch (err) {
-        console.log(err)
-    }
-    finally {
-        await client.close()
-    }
-}
+// export async function getUserInfoById(userId) {
+//     try {
+//         await client.connect()
+//         const database = client.db('Fishbowl')
+//         const users = database.collection('Users')
+//         const user = await users.find({ userEmail: userId })
+//         return user
+//     }
+//     catch (err) {
+//         console.log(err)
+//     }
+//     finally {
+//         await client.close()
+//     }
+// }
 
 export async function registerUser(name, email, password) {
 
@@ -253,6 +253,22 @@ export async function updateUserFishbowlCreator(oldUsername, NewUsername) {
         const fishbowls = database.collection('Fishbowls')
         const updateFishbowlCreatorName = await fishbowls.updateMany({ creator: oldUsername }, { $set: { creator: NewUsername } })
         return updateFishbowlCreatorName
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
+export async function updateUserPasswordsByEmail(email, newPassword) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const userToUpdatePasswords = await users.updateOne({email:email},{$set:{password:newPassword}},{ upsert: true })
+        return userToUpdatePasswords
 
     }
     catch (err) {
@@ -262,3 +278,4 @@ export async function updateUserFishbowlCreator(oldUsername, NewUsername) {
         await client.close()
     }
 }
+

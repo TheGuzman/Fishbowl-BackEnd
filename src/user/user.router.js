@@ -3,7 +3,7 @@ import express from 'express'
 import { retrieveUserInfoCtrl } from './user.controller.js'
 import { registerFihsbowlCtrl } from './user.controller.js'
 import { retrieveUserFishbowlsCtrl, retrieveAllFishbowlsCtrl, deleteaFishbowlByIdCtrl } from './user.controller.js'
-import { deleteUserAccountCtrl,updateUserNameCtrl, } from './user.controller.js'
+import { deleteUserAccountCtrl, updateUserNameCtrl, updateUserPasswordCtrl } from './user.controller.js'
 import { validateJWTAuth } from '../auth/auth.middleware.js'
 
 
@@ -14,6 +14,9 @@ router.use(validateJWTAuth)
 router.route('/')
     .get(retrieveUserInfoCtrl);
 
+
+//USER ROUTES
+
 router.route('/becomeafish/myaccount/deleteuseraccount')
     .delete(deleteUserAccountCtrl)
 
@@ -21,7 +24,10 @@ router.route('/becomeafish/myaccount/updateusername')
     .patch(updateUserNameCtrl)
 
 router.route('/becomeafish/myaccount/updateuserpassword')
-    // .patch(updateUserPasswordCtrl)
+    .patch(updateUserPasswordCtrl)
+
+
+//FISHBOWL ROUTES
 
 
 router.route('/becomeafish/getallfishbowls')
