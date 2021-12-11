@@ -14,7 +14,6 @@ async function getUserEmailByToken(req){
     return email
 }
 
-
 export const retrieveUserInfoCtrl = async (req, res) => {
 
     const userInfo = await getUserInfoByEmail(req.userEmail);
