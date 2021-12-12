@@ -26,6 +26,8 @@ router.route('/becomeafish/myaccount/updateusername')
 router.route('/becomeafish/myaccount/updateuserpassword')
     .patch(updateUserPasswordCtrl)
 
+    
+
 
 //FISHBOWL ROUTES
 
@@ -42,7 +44,7 @@ router.route('/becomeafish/myfishbowls/createfishbowl')
 router.route('/becomeafish/deleteafishbowl/:id')
     .delete(deleteaFishbowlByIdCtrl)
 
-router.route('/becomeafish/joinfishbowl/:roomId')
+
 
 
 export default router;
