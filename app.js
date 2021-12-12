@@ -9,9 +9,13 @@ import userRouter from './src/user/user.router.js'
 
 
 const app = express()
+const server = createServer(app);
+const io = new Server(server)
 
 app.use(cors());
 app.use(express.json())
+
+
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
@@ -21,21 +25,19 @@ app.use('/user', userRouter)
 //     res.render('room', { roomId: req.query.roomId })
 // })
 
-const server = createServer(app);
-const io = new Server(server)
 
 
 io.on("connection", socket => {
     socket.emit("your id", socket.id);
     socket.on('join-room', function(roomId) {
         socket.join(roomId);
-        console.log('joining room')
-        console.log(roomId)
+        // console.log('joining room')
+        // console.log(roomId)
     });
     socket.on("send message", (body) => {
-        socket.to(body.roomId).emit("message", body)
-        console.log('on send message')
-        console.log(body,body.roomId)
+        io.to(body.roomId).emit("message", body)
+        // console.log('on send message')
+        // console.log(body,body.roomId)
 
     })
 })
