@@ -1,5 +1,5 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById, startFishbowlById } from './user.model.js'
 import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator,updateUserPasswordsByEmail } from './user.model.js'
 import { encodePassword } from '../auth/auth.utils.js';
 
@@ -128,8 +128,6 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
 export const deleteaFishbowlByIdCtrl = async (req, res) => {
 
     let id = req.params.id
-    id = id.substring(1)
-
 
     try {
         const fishbowlToDelete = await deleteFishbowlById(id)
@@ -139,6 +137,17 @@ export const deleteaFishbowlByIdCtrl = async (req, res) => {
     catch(err){
         res.status(409).send('There was an error');
     }
+}
 
-    
+export const startaFishbowlByIdCtrl = async (req, res) => {
+
+    let id = req.params.id
+
+    try {
+        const fishbowlToStart = await startFishbowlById(id)
+        res.status(200).send(fishbowlToStart)
+    }
+    catch(err){
+        res.status(409).send('There was an error');
+    }
 }

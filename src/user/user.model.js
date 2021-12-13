@@ -206,6 +206,24 @@ export async function deleteFishbowlById(fishbowlId) {
 
 }
 
+export async function startFishbowlById(fishbowlId) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const fishbowlToStart = await fishbowls.updateOne({ _id: ObjectId(fishbowlId) }, {$set:{state:'active'}})
+        return fishbowlToStart
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
+
 export async function deleteUserAccountByEmail(email) {
     try {
         await client.connect()

@@ -10,7 +10,12 @@ import userRouter from './src/user/user.router.js'
 
 const app = express()
 const server = createServer(app);
-const io = new Server(server)
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      }
+})
 
 app.use(cors());
 app.use(express.json())
@@ -22,23 +27,21 @@ app.use('/user', userRouter)
 
 
 // app.get('user/becomeafish/joinfishbowl/:roomId', (req, res) => {
-//     res.render('room', { roomId: req.query.roomId })
+//     console.log(req.params.roomId)
+//     res.render('room', { roomId: req.params.roomId })
+    
 // })
-
-
 
 io.on("connection", socket => {
     socket.emit("your id", socket.id);
     socket.on('join-room', function(roomId) {
         socket.join(roomId);
-        // console.log('joining room')
-        // console.log(roomId)
+        // console.log('joining room'
     });
     socket.on("send message", (body) => {
         io.to(body.roomId).emit("message", body)
         // console.log('on send message')
         // console.log(body,body.roomId)
-
     })
 })
 // server.listen(3002)
