@@ -14,7 +14,7 @@ const io = new Server(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
-      }
+    }
 })
 
 app.use(cors());
@@ -26,24 +26,27 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 
 
-// app.get('user/becomeafish/joinfishbowl/:roomId', (req, res) => {
-//     console.log(req.params.roomId)
-//     res.render('room', { roomId: req.params.roomId })
-    
-// })
+app.get('user/becomeafish/joinfishbowl/:roomId', (req, res) => {
+    res.render('room', { roomId: req.params.roomId })
+
+})
 
 io.on("connection", socket => {
     socket.emit("your id", socket.id);
-    socket.on('join-room', function(roomId) {
+    socket.on('join-room', function (roomId) {
         socket.join(roomId);
-        // console.log('joining room'
-    });
-    socket.on("send message", (body) => {
-        io.to(body.roomId).emit("message", body)
-        // console.log('on send message')
-        // console.log(body,body.roomId)
+        console.log(socket.id + ' joining room ' + roomId)
+
+        socket.on("send message", (body) => {
+            io.to(roomId).emit("message", body)
+        })
+
+        socket.on('disconnect', () => {
+            socket.to(roomId).emit('user-disconnected', socket.id)
+            console.log('left user:' + socket.id)
+        })
     })
-})
+});
 // server.listen(3002)
 
 
