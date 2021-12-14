@@ -2,7 +2,7 @@
 import express from 'express'
 import { retrieveUserInfoCtrl } from './user.controller.js'
 import { registerFihsbowlCtrl } from './user.controller.js'
-import { retrieveUserFishbowlsCtrl, retrieveAllFishbowlsCtrl, deleteaFishbowlByIdCtrl,startaFishbowlByIdCtrl } from './user.controller.js'
+import { retrieveUserFishbowlsCtrl, retrieveAllFishbowlsCtrl, deleteaFishbowlByIdCtrl, startaFishbowlByIdCtrl, retrieveFishbowlByRoomIdCtrl } from './user.controller.js'
 import { deleteUserAccountCtrl, updateUserNameCtrl, updateUserPasswordCtrl, } from './user.controller.js'
 import { validateJWTAuth } from '../auth/auth.middleware.js'
 
@@ -37,6 +37,9 @@ router.route('/becomeafish/getallfishbowls')
 
 router.route('/becomeafish/myfishbowls/getuserfishbowls')
     .get(retrieveUserFishbowlsCtrl)
+
+router.route('/becomeafish/joinfishbowl/getfishbowl/:id')
+    .get(retrieveFishbowlByRoomIdCtrl)
 
 router.route('/becomeafish/myfishbowls/createfishbowl')
     .post(registerFihsbowlCtrl)

@@ -26,13 +26,13 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 
 
-app.get('user/becomeafish/joinfishbowl/:roomId', (req, res) => {
+app.get('/becomeafish/joinfishbowl/:roomId', (req, res) => {
     res.render('room', { roomId: req.params.roomId })
 
 })
 io.on("connection", socket => {
-    socket.emit("userId", socket.id);
     socket.on("join-room", roomID => {
+        socket.emit("userId", socket.id);
         socket.join(roomID);
         console.log('room joined by' + socket.id)
 

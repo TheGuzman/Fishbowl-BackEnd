@@ -223,6 +223,25 @@ export async function startFishbowlById(fishbowlId) {
 
 }
 
+export async function retrieveFishbowlByRoomId(fishbowlId) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const fishbowls = database.collection('Fishbowls')
+        const fishbowl = await fishbowls.findOne({ roomId:fishbowlId })
+        console.log('from model')
+        console.log(fishbowl)
+        return fishbowl
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
 
 export async function deleteUserAccountByEmail(email) {
     try {
