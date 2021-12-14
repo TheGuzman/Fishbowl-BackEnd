@@ -30,24 +30,27 @@ app.get('user/becomeafish/joinfishbowl/:roomId', (req, res) => {
     res.render('room', { roomId: req.params.roomId })
 
 })
-
 io.on("connection", socket => {
-    socket.emit("your id", socket.id);
-    socket.on('join-room', function (roomId) {
-        socket.join(roomId);
-        console.log(socket.id + ' joining room ' + roomId)
+    socket.emit("userId", socket.id);
+    socket.on("join-room", roomID => {
+        socket.join(roomID);
+        console.log('room joined by' + socket.id)
 
         socket.on("send message", (body) => {
-            io.to(roomId).emit("message", body)
+            console.log('Mensaje desde cliente', body);
+            io.to(roomID).emit("message", body)
         })
-
         socket.on('disconnect', () => {
-            socket.to(roomId).emit('user-disconnected', socket.id)
+            socket.to(roomID).emit('user-disconnected', socket.id)
             console.log('left user:' + socket.id)
         })
-    })
+    });
+
 });
-// server.listen(3002)
+
+
+
+
 
 
 server.listen(3001, console.log('Server is up at port 3001'))
