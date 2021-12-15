@@ -35,33 +35,31 @@ let users=[];
 
 io.on("connection", socket => {
     socket.on("join-room", (roomID) => {
+        socket.emit("userId", socket.id);
+        socket.join(roomID);
         const user = {
-            id: socket.id
+            id: socket.id,
         }
         users.push(user)
-        socket.emit('new user', users)
-
-        socket.join(roomID);
-
+        io.to(roomID).emit('new user', users)
+        
         console.log('room ' + roomID)
         console.log('joined by ' + user.id)
         console.log('all users are')
         console.log(users)
-
-        socket.emit("userId", user.id);
-
+        
     });
     socket.on("send message", (body, roomID) => {
         console.log('Mensaje desde cliente', body);
         io.to(roomID).emit("message", body)
     })
-    socket.on('disconnect', (roomID) => {
-        socket.to(roomID).emit('user-disconnected', socket.id)
-        console.log('left user:' + socket.id)
-        socket.disconnect(socket.id)
-        const i = users.findIndex(u=>u===socket.id)
-        users.splice(i,1)
-    })
+    // socket.on('disconnect', (roomID, userID) => {
+    //     socket.to(roomID).emit('user-disconnected', userID)
+    //     console.log('left user:' + userID)
+    //     socket.disconnect()
+    //     const i = users.findIndex(u=>u===userID)
+    //     users.splice(i,1)
+    // })
     
 
 });
