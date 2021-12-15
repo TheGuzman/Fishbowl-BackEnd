@@ -229,8 +229,6 @@ export async function retrieveFishbowlByRoomId(fishbowlId) {
         const database = client.db('Fishbowl')
         const fishbowls = database.collection('Fishbowls')
         const fishbowl = await fishbowls.findOne({ roomId:fishbowlId })
-        console.log('from model')
-        console.log(fishbowl)
         return fishbowl
     }
     catch (err) {

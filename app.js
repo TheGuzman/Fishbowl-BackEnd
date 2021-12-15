@@ -26,25 +26,43 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 
 
-app.get('/becomeafish/joinfishbowl/:roomId', (req, res) => {
-    res.render('room', { roomId: req.params.roomId })
+// app.get('/becomeafish/joinfishbowl/:roomId', (req, res) => {
+//     res.render('room', { roomId: req.params.roomId })
 
-})
+// })
+
+let users=[];
+
 io.on("connection", socket => {
-    socket.on("join-room", roomID => {
-        socket.emit("userId", socket.id);
-        socket.join(roomID);
-        console.log('room joined by' + socket.id)
+    socket.on("join-room", (roomID) => {
+        const user = {
+            id: socket.id
+        }
+        users.push(user)
+        socket.emit('new user', users)
 
-        socket.on("send message", (body) => {
-            console.log('Mensaje desde cliente', body);
-            io.to(roomID).emit("message", body)
-        })
-        socket.on('disconnect', () => {
-            socket.to(roomID).emit('user-disconnected', socket.id)
-            console.log('left user:' + socket.id)
-        })
+        socket.join(roomID);
+
+        console.log('room ' + roomID)
+        console.log('joined by ' + user.id)
+        console.log('all users are')
+        console.log(users)
+
+        socket.emit("userId", user.id);
+
     });
+    socket.on("send message", (body, roomID) => {
+        console.log('Mensaje desde cliente', body);
+        io.to(roomID).emit("message", body)
+    })
+    socket.on('disconnect', (roomID) => {
+        socket.to(roomID).emit('user-disconnected', socket.id)
+        console.log('left user:' + socket.id)
+        socket.disconnect(socket.id)
+        const i = users.findIndex(u=>u===socket.id)
+        users.splice(i,1)
+    })
+    
 
 });
 

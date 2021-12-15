@@ -11,16 +11,15 @@ async function getUserEmailByToken(req){
     const headerAuth = req.get('Authorization')  //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
     const jwtToken = headerAuth?.split(' ')[1];
     const jwtDecoded = await jwt.verify(jwtToken, secret);
-    let email = jwtDecoded.user;
+    let email = await jwtDecoded.user;
     return email
 }
 
 export const retrieveUserInfoCtrl = async (req, res) => {
 
-    const userInfo = await getUserInfoByEmail(req.userEmail);
-    console.log(req.userEmail)
+    const email = await getUserEmailByToken(req)
+    const userInfo = await getUserInfoByEmail(email);
     delete userInfo.userPassword;
-    console.log('from retrieve user controller' + userInfo)
 
     res.send(userInfo)
 }
@@ -126,8 +125,6 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
 
 export const retrieveFishbowlByRoomIdCtrl = async (req, res) => {
     let id = req.params.id
-    console.log(typeof id)
-
     try {
         const fishbowl = await retrieveFishbowlByRoomId(id)
         res.status(201).send(fishbowl)

@@ -8,9 +8,9 @@ export const validateJWTAuth = (req,res,next)=>{
 
     try{
         const jwtDecoded = jwt.verify(jwtToken,secret);
-        console.log(jwtDecoded)
+        // console.log(jwtDecoded)
         req.userEmail = jwtDecoded.user
-        console.log('valid log in from validateJWTAuth middleware')
+        // console.log('valid log in from validateJWTAuth middleware')
         next()
     }
     catch(err){
