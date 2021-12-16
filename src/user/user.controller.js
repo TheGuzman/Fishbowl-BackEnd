@@ -1,6 +1,7 @@
 import { getUserInfoByEmail } from './user.model.js';
-import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById } from './user.model.js'
-import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator } from './user.model.js'
+import { registerFishbowl, retrieveUserFishbowls, retrieveAllFishbowls, deleteFishbowlById, retrieveUserFishbowlsById, startFishbowlById, retrieveFishbowlByRoomId } from './user.model.js'
+import { deleteUserAccountByEmail, updateUserNameByEmail, updateUserFishbowlCreator,updateUserPasswordsByEmail } from './user.model.js'
+import { encodePassword } from '../auth/auth.utils.js';
 
 import jwt from 'jsonwebtoken';
 import { secret } from '../auth/auth.secret.js'
@@ -10,16 +11,15 @@ async function getUserEmailByToken(req){
     const headerAuth = req.get('Authorization')  //Aquí traigo el JWT token para identificar al usuario usando el secret y la funcion verify
     const jwtToken = headerAuth?.split(' ')[1];
     const jwtDecoded = await jwt.verify(jwtToken, secret);
-    let email = jwtDecoded.user;
+    let email = await jwtDecoded.user;
     return email
 }
 
 export const retrieveUserInfoCtrl = async (req, res) => {
 
-    const userInfo = await getUserInfoByEmail(req.userEmail);
-    console.log(req.userEmail)
+    const email = await getUserEmailByToken(req)
+    const userInfo = await getUserInfoByEmail(email);
     delete userInfo.userPassword;
-    console.log('from retrieve user controller' + userInfo)
 
     res.send(userInfo)
 }
@@ -50,6 +50,23 @@ export const updateUserNameCtrl = async (req, res) => {
     }
     
 }
+
+export const updateUserPasswordCtrl = async (req, res) => {
+
+    const email = await getUserEmailByToken(req)
+    const newUserPassword = req.body.userPassword;
+    const newUserPasswordEncoded = await encodePassword(newUserPassword)
+
+    console.log(email, req.body.userPassword, newUserPasswordEncoded)
+
+    if(await updateUserPasswordsByEmail(email, newUserPasswordEncoded)){
+        res.status(200).send({message:'user password successfully updated', status:200})
+    }
+    else{
+        res.status(409).send('There was an error');
+    }
+}
+    
 
 
 
@@ -106,12 +123,23 @@ export const retrieveAllFishbowlsCtrl = async (req, res) => {
     
 }
 
+export const retrieveFishbowlByRoomIdCtrl = async (req, res) => {
+    let id = req.params.id
+    try {
+        const fishbowl = await retrieveFishbowlByRoomId(id)
+        res.status(201).send(fishbowl)
+    }
+    catch(err){
+        res.status(409).send('There was an error');
+    }
+
+    
+}
+
 
 export const deleteaFishbowlByIdCtrl = async (req, res) => {
 
     let id = req.params.id
-    id = id.substring(1)
-
 
     try {
         const fishbowlToDelete = await deleteFishbowlById(id)
@@ -121,6 +149,17 @@ export const deleteaFishbowlByIdCtrl = async (req, res) => {
     catch(err){
         res.status(409).send('There was an error');
     }
+}
 
-    
+export const startaFishbowlByIdCtrl = async (req, res) => {
+
+    let id = req.params.id
+
+    try {
+        const fishbowlToStart = await startFishbowlById(id)
+        res.status(200).send(fishbowlToStart)
+    }
+    catch(err){
+        res.status(409).send('There was an error');
+    }
 }
