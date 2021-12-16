@@ -31,24 +31,32 @@ app.use('/user', userRouter)
 
 // })
 
-let users=[];
+// let users=[];
+
+const rooms = []
+
+
 
 io.on("connection", socket => {
     socket.on("join-room", (roomID, username) => {
         socket.join(roomID);
         socket.emit("userId", socket.id);
         const user = {
-            room:`${roomID}`,
             id: socket.id,
             name: username,
         }
-        users.push(user)
-        io.to(roomID).emit('new user', users.filter)
-        
-        console.log('room ' + roomID)
-        console.log('joined by ' + user.id)
-        console.log('all users are')
-        console.log(users)
+        const currentRoom = rooms.find(r => r.id === roomID)
+        if (currentRoom !== undefined) {
+            currentRoom.users.push(user)
+        }
+        else {
+            rooms.push({
+                id: `${roomID}`,
+                users: [{ ...user }]
+            })
+        }
+        io.to(roomID).emit('new user', rooms.filter(r => r.id === roomID))
+        console.log(rooms.filter(r => r.id === roomID))
         
     });
     socket.on("send message", (body, roomID) => {
@@ -56,16 +64,18 @@ io.on("connection", socket => {
         io.to(roomID).emit("message", body)
     })
     socket.on('user-disconnect', (roomID, userID) => {
-        // socket.to(roomID).emit('user-disconnected', userID)
-        console.log('room ' + roomID)
-        console.log('left user:' + userID)
-        const i = users.findIndex(u=>u===userID)
-        users.splice(i,1)
-        console.log(users)
-        io.to(roomID).emit('user left', users)
+        const i = rooms.find(r => r.id === roomID).users.findIndex(u => u.id === userID);
+        rooms.find(r => r.id === roomID).users.splice(i, 1);
+        if(rooms.find(r=>r.id===roomID).users.length===0){
+            const i = rooms.findIndex(r=>r.id===roomID);
+            rooms.splice(i,1)
+        }
+        io.to(roomID).emit('user left', rooms.filter(r => r.id === roomID))
         socket.disconnect()
+
+
     })
-    
+
 
 });
 
