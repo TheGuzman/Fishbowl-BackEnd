@@ -40,7 +40,7 @@ const rooms = []
 io.on("connection", socket => {
     socket.on("join-room", (roomID, username) => {
         socket.join(roomID);
-        socket.emit("userId", socket.id);
+        socket.to(roomID).emit("userId", socket.id);
         const user = {
             id: socket.id,
             name: username,
@@ -55,22 +55,29 @@ io.on("connection", socket => {
                 users: [{ ...user }]
             })
         }
-        io.to(roomID).emit('new user', rooms.filter(r => r.id === roomID))
-        console.log(rooms.filter(r => r.id === roomID))
-        
+        io.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
+
+        //STREAMING
+    socket.to(roomID).emit('user-streaming', socket.id)
+
     });
+
+    
+
     socket.on("send message", (body, roomID) => {
         console.log('Mensaje desde cliente', body);
         io.to(roomID).emit("message", body)
     })
     socket.on('user-disconnect', (roomID, userID) => {
+
         const i = rooms.find(r => r.id === roomID).users.findIndex(u => u.id === userID);
         rooms.find(r => r.id === roomID).users.splice(i, 1);
-        if(rooms.find(r=>r.id===roomID).users.length===0){
-            const i = rooms.findIndex(r=>r.id===roomID);
-            rooms.splice(i,1)
+
+        if (rooms.find(r => r.id === roomID).users.length === 0) {
+            const i = rooms.findIndex(r => r.id === roomID);
+            rooms.splice(i, 1)
         }
-        io.to(roomID).emit('user left', rooms.filter(r => r.id === roomID))
+        io.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
         socket.disconnect()
 
 
