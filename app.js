@@ -34,14 +34,16 @@ app.use('/user', userRouter)
 let users=[];
 
 io.on("connection", socket => {
-    socket.on("join-room", (roomID) => {
-        socket.emit("userId", socket.id);
+    socket.on("join-room", (roomID, username) => {
         socket.join(roomID);
+        socket.emit("userId", socket.id);
         const user = {
+            room:`${roomID}`,
             id: socket.id,
+            name: username,
         }
         users.push(user)
-        io.to(roomID).emit('new user', users)
+        io.to(roomID).emit('new user', users.filter)
         
         console.log('room ' + roomID)
         console.log('joined by ' + user.id)
@@ -53,13 +55,16 @@ io.on("connection", socket => {
         console.log('Mensaje desde cliente', body);
         io.to(roomID).emit("message", body)
     })
-    // socket.on('disconnect', (roomID, userID) => {
-    //     socket.to(roomID).emit('user-disconnected', userID)
-    //     console.log('left user:' + userID)
-    //     socket.disconnect()
-    //     const i = users.findIndex(u=>u===userID)
-    //     users.splice(i,1)
-    // })
+    socket.on('user-disconnect', (roomID, userID) => {
+        // socket.to(roomID).emit('user-disconnected', userID)
+        console.log('room ' + roomID)
+        console.log('left user:' + userID)
+        const i = users.findIndex(u=>u===userID)
+        users.splice(i,1)
+        console.log(users)
+        io.to(roomID).emit('user left', users)
+        socket.disconnect()
+    })
     
 
 });
