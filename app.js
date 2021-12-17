@@ -55,7 +55,7 @@ io.on("connection", socket => {
                 users: [{ ...user }]
             })
         }
-        socket.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
+        io.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
 
         //STREAMING
         socket.on('join-streaming-room', id =>{
@@ -64,7 +64,6 @@ io.on("connection", socket => {
         
 
     });
-
 
 
     socket.on("send message", (body, roomID) => {
