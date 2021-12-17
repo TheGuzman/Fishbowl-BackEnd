@@ -40,7 +40,7 @@ const rooms = []
 io.on("connection", socket => {
     socket.on("join-room", (roomID, username) => {
         socket.join(roomID);
-        socket.to(roomID).emit("userId", socket.id);
+        socket.emit("userId", socket.id);
         const user = {
             id: socket.id,
             name: username,
@@ -55,14 +55,17 @@ io.on("connection", socket => {
                 users: [{ ...user }]
             })
         }
-        io.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
+        socket.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
 
         //STREAMING
-    io.to(roomID).emit('user-streaming', socket.id)
+        socket.on('join-streaming-room', id =>{
+            socket.to(roomID).emit('user-streaming', socket.id)
+        })
+        
 
     });
 
-    
+
 
     socket.on("send message", (body, roomID) => {
         console.log('Mensaje desde cliente', body);
@@ -77,7 +80,7 @@ io.on("connection", socket => {
             const i = rooms.findIndex(r => r.id === roomID);
             rooms.splice(i, 1)
         }
-        io.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
+        socket.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
         socket.disconnect()
 
 
