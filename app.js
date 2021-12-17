@@ -58,7 +58,7 @@ io.on("connection", socket => {
         io.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
 
         //STREAMING
-    socket.to(roomID).emit('user-streaming', socket.id)
+    io.to(roomID).emit('user-streaming', socket.id)
 
     });
 
