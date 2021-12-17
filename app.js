@@ -59,7 +59,7 @@ io.on("connection", socket => {
 
         //STREAMING
         socket.on('join-streaming-room', id =>{
-            socket.to(roomID).emit('user-streaming', socket.id)
+            socket.to(roomID).emit('user-streaming', id)
         })
         
 
