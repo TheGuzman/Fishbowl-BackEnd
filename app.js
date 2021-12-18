@@ -80,6 +80,7 @@ io.on("connection", socket => {
             rooms.splice(i, 1)
         }
         socket.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
+        socket.to(roomID).emit('close',userID)
         socket.disconnect()
 
 
