@@ -35,8 +35,6 @@ app.use('/user', userRouter)
 
 const rooms = []
 
-
-
 io.on("connection", socket => {
     socket.on("join-room", (roomID, username) => {
         socket.join(roomID);
@@ -58,19 +56,22 @@ io.on("connection", socket => {
         io.to(roomID).emit('new-chat-user', rooms.filter(r => r.id === roomID))
 
         //STREAMING
-        socket.on('join-streaming-room', id =>{
-            socket.to(roomID).emit('user-streaming', id)
+        socket.on('join-streaming-room', id => {
+                socket.to(roomID).emit('user-streaming', id)
         })
-        
+
 
     });
-
 
     socket.on("send message", (body, roomID) => {
         console.log('Mensaje desde cliente', body);
         io.to(roomID).emit("message", body)
     })
-    socket.on('user-disconnect', (roomID, userID) => {
+
+    socket.on('user-disconnect', info => {
+
+        const userID=info.userID
+        const roomID=info.roomId
 
         const i = rooms.find(r => r.id === roomID).users.findIndex(u => u.id === userID);
         rooms.find(r => r.id === roomID).users.splice(i, 1);
@@ -79,9 +80,10 @@ io.on("connection", socket => {
             const i = rooms.findIndex(r => r.id === roomID);
             rooms.splice(i, 1)
         }
+
         socket.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
         socket.to(roomID).emit('close',userID)
-        socket.disconnect()
+        socket.disconnect() 
 
 
     })
