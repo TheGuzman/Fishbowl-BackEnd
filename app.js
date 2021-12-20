@@ -82,7 +82,7 @@ io.on("connection", socket => {
         }
 
         socket.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
-        socket.to(roomID).emit('close',userID)
+        socket.to(roomID).on('close',userID)
         socket.disconnect() 
 
 

@@ -23,6 +23,24 @@ export async function registerToken(token, email) {
     }
 }
 
+export async function registerForgotPasswordToken(token, email) {
+
+    let forgottenPassword = { userToken: token, userEmail: email }
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('ResetPassword')
+        const newRegistration = await users.insertOne(forgottenPassword)
+        return newRegistration
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
 export async function retrieveEmailByToken (token) {
 
     try {
@@ -47,6 +65,24 @@ export async function validateToken (token) {
         await client.connect()
         const database = client.db('Fishbowl')
         const registeredEmails = database.collection('Registrations')
+        const user = await registeredEmails.findOne({userToken:token})
+        return user.userEmail
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+
+}
+
+export async function validateForgottenPasswordToken (token) {
+
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const registeredEmails = database.collection('ResetPassword')
         const user = await registeredEmails.findOne({userToken:token})
         return user.userEmail
     }
