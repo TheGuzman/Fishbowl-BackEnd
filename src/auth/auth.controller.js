@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { registerUser, getUserInfoByEmailAndPassword, updateUserMailVerification, getUserInfoByEmailAndUserName, getUserInfoByEmail } from '../user/user.model.js';
 import { secret } from './auth.secret.js'
-import { registerToken, validateToken, deleteToken, registerForgotPasswordToken } from "./auth.model.js";
+import { registerToken, validateToken, deleteToken, registerForgotPasswordToken,updateForgottenPasswordVerification,validateForgottenPasswordToken } from "./auth.model.js";
 import { encodePassword, generateRandomEmailToken } from './auth.utils.js';
 import { sendMail } from '../adapters/mail.js';
 
@@ -67,9 +67,9 @@ export const validateUserController = async (req, res) => {
 
 export const forgotPasswordController = async (req, res) => {
 
-    const userEmail = req.body;
+    const userEmail = req.body.userEmail;
 
-    const userInfo = getUserInfoByEmail(email)
+    const userInfo = getUserInfoByEmail(userEmail)
 
     if (userInfo !== null) {
         const tokenForgotPassword = generateRandomEmailToken();
@@ -82,20 +82,19 @@ export const forgotPasswordController = async (req, res) => {
         res.status(404).send(JSON.stringify('Email was not found'));
     }
 
-
 }
 
 export const validateForgottenPasswordController = async (req, res) => {
+    const passEnconded = encodePassword(req.body.userPassword)
     const email = await validateForgottenPasswordToken(req.body.token);
+    
     if (email !== null) {
-        // actualizo el estado del usuario en BBDD a SUCCESS
-        updateUserMailVerification(email);
+
+        updateForgottenPasswordVerification(email, passEnconded);
         deleteToken(email)
         //devuelvo al cliente un 200
         res.status(200).send();
     } else {
-        // si el usuario ya existe mando al cliente un 409 (conflict), indicando que el usuario 
-        // ya existe
         res.status(400).send(JSON.stringify('Token is invalid'));
     }
 

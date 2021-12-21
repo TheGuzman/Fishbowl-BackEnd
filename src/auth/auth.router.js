@@ -1,5 +1,5 @@
 import express from 'express'
-import { loginJWTController, registerUserController, validateUserController,forgotPasswordController } from './auth.controller.js'
+import { loginJWTController, registerUserController, validateUserController,forgotPasswordController,validateForgottenPasswordController } from './auth.controller.js'
 
 const router = express.Router()
 
@@ -19,7 +19,7 @@ router.route('/forgot-password')
     .post(forgotPasswordController)
 
 router.route('/validate-new-password')
-    .post(registerUserController)
+    .post(validateForgottenPasswordController)
 
 
 

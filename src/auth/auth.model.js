@@ -95,11 +95,32 @@ export async function validateForgottenPasswordToken (token) {
 
 }
 
+export async function  updateForgottenPasswordVerification(email, password) {
+    try {
+        await client.connect()
+        const database = client.db('Fishbowl')
+        const users = database.collection('Users')
+        const userToUpdate = await users.find({ userEmail: email })
+        if (userToUpdate !== null) {
+            await users.updateOne({ email: email }, { $set: { password: password } }, { upsert: true })
+        }
+        else {
+            console.log('email does not match')
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        await client.close()
+    }
+}
+
 export async function deleteToken (email){
     try {
         await client.connect()
         const database = client.db('Fishbowl')
-        const registeredEmails = database.collection('Registrations')
+        const registeredEmails = database.collection('ResetPassword')
         const user = await registeredEmails.findOneAndDelete({userEmail:email})
         return user
     }
