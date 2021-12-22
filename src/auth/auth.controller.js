@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { registerUser, getUserInfoByEmailAndPassword, updateUserMailVerification, getUserInfoByEmailAndUserName, getUserInfoByEmail } from '../user/user.model.js';
 import { secret } from './auth.secret.js'
-import { registerToken, validateToken, deleteToken, registerForgotPasswordToken,updateForgottenPasswordVerification,validateForgottenPasswordToken } from "./auth.model.js";
+import { registerToken, validateToken, deleteToken,deleteResetPasswordToken, registerForgotPasswordToken,updateForgottenPasswordVerification,validateForgottenPasswordToken } from "./auth.model.js";
 import { encodePassword, generateRandomEmailToken } from './auth.utils.js';
 import { sendMail } from '../adapters/mail.js';
 
@@ -91,7 +91,7 @@ export const validateForgottenPasswordController = async (req, res) => {
     if (email !== null) {
 
         updateForgottenPasswordVerification(email, passEnconded);
-        deleteToken(email)
+        deleteResetPasswordToken(email)
         //devuelvo al cliente un 200
         res.status(200).send();
     } else {
