@@ -34,6 +34,7 @@ app.use('/user', userRouter)
 // let users=[];
 
 const rooms = []
+const fishbowlers = [] //active streamers
 
 io.on("connection", socket => {
     socket.on("join-room", (roomID, username) => {
@@ -57,7 +58,24 @@ io.on("connection", socket => {
 
         //STREAMING
         socket.on('join-streaming-room', id => {
-                socket.to(roomID).emit('user-streaming', id)
+
+            fishbowlers.push(id)
+
+            if (fishbowlers.length <= 3) {
+
+                socket.to(roomID).emit('user-streaming', fishbowlers)
+
+                // socket.to(roomID).emit('user-streaming', id)
+
+
+
+            } //if room is not full
+            else {
+                socket.to(roomID).emit('user-listener', id) //if room is full
+            }
+
+            //send the fishbowlers array to client
+            socket.to(roomID).emit('fishbowlers', fishbowlers)
         })
 
 
@@ -70,8 +88,8 @@ io.on("connection", socket => {
 
     socket.on('user-disconnect', info => {
 
-        const userID=info.userID
-        const roomID=info.roomId
+        const userID = info.userID
+        const roomID = info.roomId
 
         const i = rooms.find(r => r.id === roomID).users.findIndex(u => u.id === userID);
         rooms.find(r => r.id === roomID).users.splice(i, 1);
@@ -82,8 +100,8 @@ io.on("connection", socket => {
         }
 
         socket.to(roomID).emit('chat-user-left', rooms.filter(r => r.id === roomID))
-        socket.to(roomID).emit('close',userID)
-        socket.disconnect() 
+        socket.to(roomID).emit('close', userID)
+        socket.disconnect()
 
 
     })

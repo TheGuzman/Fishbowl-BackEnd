@@ -40,25 +40,17 @@ export const registerUserController = async (req, res) => {
             res.status(201).send(JSON.stringify('user registered'));
         }
     } else {
-        // si el usuario ya existe mando al cliente un 409 (conflict), indicando que el usuario 
-        // ya existe
         res.status(409).send(JSON.stringify('User already exists'));
     }
 }
 
 export const validateUserController = async (req, res) => {
-    // llamo a mi modelo para que me diga si el token es valido o no
     const email = await validateToken(req.query.token);
-    // si existe email es que es válido, sino no es válido
     if (email !== null) {
-        // actualizo el estado del usuario en BBDD a SUCCESS
         updateUserMailVerification(email);
         deleteToken(email)
-        //devuelvo al cliente un 200
         res.status(200).send();
     } else {
-        // si el usuario ya existe mando al cliente un 409 (conflict), indicando que el usuario 
-        // ya existe
         res.status(400).send(JSON.stringify('Token is invalid'));
     }
 
@@ -92,7 +84,6 @@ export const validateForgottenPasswordController = async (req, res) => {
 
         updateForgottenPasswordVerification(email, passEnconded);
         deleteResetPasswordToken(email)
-        //devuelvo al cliente un 200
         res.status(200).send();
     } else {
         res.status(400).send(JSON.stringify('Token is invalid'));
