@@ -1,7 +1,4 @@
 import nodemailer from 'nodemailer';
-// import {userEmail} from './mailAccount.js'
-// import {passEmail} from './mailAccount.js'
-
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,8 +12,6 @@ export const sendMail = (to, subject, content) => {
                 
                 user:process.env.USER_EMAIL,
                 pass:process.env.USER_PASS,
-                // user: userEmail,
-                // pass: passEmail
             }
         });
         const message = {
