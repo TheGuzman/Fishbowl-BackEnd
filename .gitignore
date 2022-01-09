@@ -28,3 +28,4 @@ pusher.config.js
 index.html
 auth.utils.js
 mailAccount.js
+.env
