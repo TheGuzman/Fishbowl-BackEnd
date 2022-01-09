@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
-import {userEmail} from './mailAccount.js'
-import {passEmail} from './mailAccount.js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const sendMail = (to, subject, content) => {
         const transporter = nodemailer.createTransport({
@@ -8,9 +8,10 @@ export const sendMail = (to, subject, content) => {
             host: 'smtp.gmail.com ',
             port: 465,
             secure: true,
-            auth: { 
-                user: userEmail,
-                pass: passEmail
+            auth: {
+                
+                user:process.env.USER_EMAIL,
+                pass:process.env.USER_PASS,
             }
         });
         const message = {
@@ -28,4 +29,5 @@ export const sendMail = (to, subject, content) => {
             console.log('Message sent: %s', info.messageId);
              console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         });
+        console.log(process.env.USER_EMAIL)
 }
