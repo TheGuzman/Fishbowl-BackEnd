@@ -118,4 +118,4 @@ io.on("connection", socket => {
 
 
 
-server.listen(port, console.log('Server is up at port 3001'))
+server.listen(port, console.log(`Server is up at port ${port}`))
