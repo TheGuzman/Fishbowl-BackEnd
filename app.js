@@ -7,6 +7,10 @@ import { Server } from "socket.io";
 import authRouter from './src/auth/auth.router.js';
 import userRouter from './src/user/user.router.js'
 
+import dotenv from 'dotenv';
+dotenv.config();
+
+const port = process.env.PORT || 3001
 
 const app = express()
 const server = createServer(app);
@@ -114,4 +118,4 @@ io.on("connection", socket => {
 
 
 
-server.listen(3001, console.log('Server is up at port 3001'))
+server.listen(port, console.log('Server is up at port 3001'))
