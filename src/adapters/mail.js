@@ -19,7 +19,8 @@ export const sendMail = (to, subject, content) => {
             from: 'Fishbowl APP <no-reply-fishbowlappfordiscussions@gmail.com>',
             to, 
             subject, 
-            html: content 
+            html: content,
+            text: content 
         };
 
         transporter.sendMail(message, (err, info) => {
