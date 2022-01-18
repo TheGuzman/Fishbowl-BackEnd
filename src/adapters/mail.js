@@ -10,7 +10,7 @@ dotenv.config();
 
 export const sendMail = (to, subject, content) => {
 
-        const accessToken = await oAuth2Client.getAccessToken()
+        // const accessToken = await oAuth2Client.getAccessToken()
 
         const transporter = nodemailer.createTransport({
             service:'gmail',
