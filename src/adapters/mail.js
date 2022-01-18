@@ -16,7 +16,8 @@ export const sendMail = (to, subject, content) => {
             from: process.env.USER_EMAIL
         });
         const message = {
-            from: 'Fishbowl APP <no-reply-fishbowlappfordiscussions@gmail.com>',
+            from: process.env.USER_EMAIL,
+            // 'Fishbowl APP <no-reply-fishbowlappfordiscussions@gmail.com>',
             to, 
             subject, 
             html: content,
