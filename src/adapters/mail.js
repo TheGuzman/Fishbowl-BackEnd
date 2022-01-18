@@ -26,7 +26,6 @@ export const sendMail = (to, subject, content) => {
                 // accessToken: accessToken,
                 pass:process.env.USER_PASS,
             },
-            from: process.env.USER_EMAIL
         });
         const message = {
             from: process.env.USER_EMAIL,
