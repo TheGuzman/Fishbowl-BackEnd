@@ -1,8 +1,10 @@
 import nodemailer from 'nodemailer';
 // import { google } from 'googleapis'
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
+const MAIL_USER = process.env.USER_EMAIL
+const MAIL_PASS = process.env.USER_EMAIL
 
 // const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID,process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 
@@ -19,16 +21,16 @@ export const sendMail = (to, subject, content) => {
             secure: true,
             auth: {
                 // type:'OAuth2',
-                user:process.env.USER_EMAIL,
+                user:MAIL_USER,
                 // clientId: process.env.CLIENT_ID,
                 // clientSecret: process.env.CLIENT_SECRET,
                 // refresh_token: process.env.REFRESH_TOKEN,
                 // accessToken: accessToken,
-                pass:process.env.USER_PASS,
+                pass:MAIL_PASS
             },
         });
         const message = {
-            from: process.env.USER_EMAIL,
+            from:`FISHBOWL APP <${MAIL_USER}>` ,
             // 'Fishbowl APP <no-reply-fishbowlappfordiscussions@gmail.com>',
             to, 
             subject, 
@@ -44,5 +46,4 @@ export const sendMail = (to, subject, content) => {
             console.log('Message sent: %s', info.messageId);
              console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         });
-        console.log(process.env.USER_EMAIL)
 }
