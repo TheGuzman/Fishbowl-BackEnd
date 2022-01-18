@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 // dotenv.config();
 
 const MAIL_USER = process.env.USER_EMAIL
-const MAIL_PASS = process.env.USER_EMAIL
+const MAIL_PASS = process.env.USER_PASS
 
 // const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID,process.env.CLIENT_SECRET, process.env.REDIRECT_URI)
 
