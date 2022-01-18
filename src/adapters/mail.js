@@ -16,6 +16,7 @@ export const sendMail = (to, subject, content) => {
 
         const transporter = nodemailer.createTransport({
             service:'gmail',
+            type:'SMTP',
             host: 'smtp.gmail.com ',
             port: 465,
             secure: true,
@@ -35,7 +36,7 @@ export const sendMail = (to, subject, content) => {
             to, 
             subject, 
             html: content,
-            // text: content 
+            text: content 
         };
 
         transporter.sendMail(message, (err, info) => {
