@@ -7,6 +7,7 @@ export const sendMail = (to, subject, content) => {
     if (err) {
       console.error("Failed to create a testing account. " + err.message);
     }
+    console.log(account, "account");
 
     const transporter = nodemailer.createTransport({
       host: account.smtp.host,
